@@ -3,8 +3,46 @@ const EMPTY_HEART = '♡'
 const FULL_HEART = '♥'
 
 // Your JavaScript code goes here!
+const likeButton = document.querySelectorAll(".like-glyph");
+const modal = document.querySelector("#modal");
+
+likeButton.forEach((buttonLike) =>
+  buttonLike.addEventListener("click", buttonLikeHandler)
+);
+
+function buttonLikeHandler(event) {
+  const { target } = event;
 
 
+  if (target.classList.contains("activated-heart")) {
+    mimicServerCall()
+      .then((resp) => {
+        target.classList.remove("activated-heart");
+        target.textContent = EMPTY_HEART;
+      })
+      .catch((error) => {
+        //when the server fails, unhide the modal and show the message from server in the modal
+        modal.classList.remove("hidden");
+        modal.querySelector("#modal-message").textContent = error;
+        setTimeout(hideModal, 3000);
+      });
+  } else {
+    //when someone likes a post that has an empty heart
+    mimicServerCall()
+      .then((resp) => {
+        target.textContent = FULL_HEART;
+        target.classList.add("activated-heart");
+      })
+      .catch((error) => {
+        modal.classList.remove("hidden");
+        modal.querySelector("#modal-message").textContent = error;
+        setTimeout(hideModal, 3000);
+      });
+  }
+}
+function hideModal() {
+  modal.classList.add("hidden");
+}
 
 
 //------------------------------------------------------------------------------
